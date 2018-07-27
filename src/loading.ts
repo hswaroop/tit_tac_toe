@@ -1,3 +1,5 @@
+import {Images} from "./view";
+
 let type = "WebGL";
 if (!PIXI.utils.isWebGLSupported())
     type = "canvas";
@@ -22,10 +24,9 @@ let app = new Application({
 document.body.appendChild(app.view);
 
 let  assets =  [
+
     "../assets/grid.png",
     "../assets/o.png",
-    "../assets/player1.png",
-    "../assets/player2.png",
     "../assets/restart.png",
     "../assets/TicTacToe.png",
     "../assets/x.png"
@@ -40,10 +41,14 @@ app.stage.addChild(loaderOpaque);
 let loaderTrans = new Sprite.fromImage("../assets/loaderTrans.png");
 app.stage.addChild(loaderTrans);
 
-loaderTrans.height = app.renderer.height/6;
+loaderTrans.height = app.renderer.height/8;
 loaderTrans.width = 0;
-loaderOpaque.width = app.renderer.width/3;
-loaderOpaque.height = app.renderer.height/6;
+loaderOpaque.width = app.renderer.width/2.5;
+loaderOpaque.height = app.renderer.height/8;
+loaderOpaque.x = app.renderer.width/2 - loaderOpaque.width/2;
+loaderOpaque.y = app.renderer.height/2 - loaderOpaque.height/2;
+loaderTrans.x = loaderOpaque.x;
+loaderTrans.y = loaderOpaque.y;
 
 loader.add(assets);
 
@@ -53,16 +58,13 @@ loader.on('progress', function(){
     let ploaded = loader.progress;
     loaderTrans.width = (ploaded * loaderOpaque.width)/100;
     alert(loader.progress);
-    loaderTrans.mask = loaderOpaque;
+    //loaderTrans.mask = loaderOpaque;
 });
 
-let button;
 
 loader.on('complete', function(){
-    button = new Sprite.fromImage("../assets/button.png");
-    app.stage.addChild(button);
-    button.interactive = true;
-    button.buttonMode = true;
-    button.on('mousedown', function(){;
+    loaderTrans.visible = false;
+    loaderOpaque.visible = false;
+    let image = new Images();
 });
 
