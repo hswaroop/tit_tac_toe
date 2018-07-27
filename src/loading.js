@@ -11,19 +11,38 @@ var app = new Application({
     resolution: 1
 });
 document.body.appendChild(app.view);
-loader
-    .add("../assets/loaderTrans.png")
-    .add("../assets/loaderOpaque.png")
-    .load(setup);
-function setup() {
-    var loaderTrans = new Sprite(resources["../assets/loaderTrans.png"].texture);
-    app.stage.addChild(loaderTrans);
-    loaderTrans.width = app.renderer.width / 2;
-    loaderTrans.height = app.renderer.height / 6;
-    var loaderOpaque = new Sprite(resources["../assets/loaderOpaque.png"].texture);
-    app.stage.addChild(loaderOpaque);
-    loaderOpaque.width = app.renderer.width / 2;
-    loaderOpaque.height = app.renderer.height / 6;
-
+var assets = [
+    "../assets/grid.png",
+    "../assets/o.png",
+    "../assets/player1.png",
+    "../assets/player2.png",
+    "../assets/restart.png",
+    "../assets/TicTacToe.png",
+    "../assets/x.png"
+];
+var loaderOpaque = new Sprite.fromImage("../assets/loaderOpaque.png");
+app.stage.addChild(loaderOpaque);
+var loaderTrans = new Sprite.fromImage("../assets/loaderTrans.png");
+app.stage.addChild(loaderTrans);
+loaderTrans.height = app.renderer.height / 6;
+loaderTrans.width = 0;
+loaderOpaque.width = app.renderer.width / 3;
+loaderOpaque.height = app.renderer.height / 6;
+loader.add(assets);
+loader.load();
+loader.on('progress', function () {
+    var ploaded = loader.progress;
+    loaderTrans.width = (ploaded * loaderOpaque.width) / 100;
+    alert(loader.progress);
     loaderTrans.mask = loaderOpaque;
-}
+});
+var button;
+loader.on('complete', function () {
+    button = new Sprite.fromImage("../assets/button.png");
+    app.stage.addChild(button);
+    button.interactive = true;
+    button.buttonMode = true;
+    button.on('mousedown', function () {
+        ;
+    });
+});
