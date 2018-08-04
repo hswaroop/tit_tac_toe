@@ -1,6 +1,7 @@
 var stats = new takeFrom(3, 3, 9);
 var Images = /** @class */ (function () {
     function Images() {
+        this.turn = 'x';
         this.addGrid();
         this.addTitle();
         this.addRestart();
@@ -45,14 +46,78 @@ var Images = /** @class */ (function () {
                 rectangle.interactive = true;
                 rectangle.buttonMode = true;
                 rectangle.alpha = 0;
+                rectangle.turn = '';
+                rectangle.name = i + "," + j;
                 rectangle.endFill();
                 game.app.stage.addChild(rectangle);
                 rectangle.on('mousedown', function () {
-                    var xPlay = new game.Sprite.fromImage("../assets/x.png");
-                    game.app.stage.addChild(xPlay);
-                    xPlay.x = rectangle.x + rectangle.width / 2 - xPlay.width / 2;
-                    xPlay.y = rectangle.y + rectangle.height / 2 - xPlay.height / 2;
-                });
+                    if (this.turn === 'x') {
+                        var xPlay = new game.Sprite.fromImage("../assets/x.png");
+                        game.app.stage.addChild(xPlay);
+                        xPlay.x = rectangle.x + rectangle.width / 2 - xPlay.width / 2;
+                        xPlay.y = rectangle.y + rectangle.height / 2 - xPlay.height / 2;
+                        rectangle.turn = 'x';
+                        rectangle.interactive = false;
+                        rectangle.buttonMode = false;
+                        this.turn = 'o';
+                    }
+                    else {
+                        var oPlay = new game.Sprite.fromImage("../assets/o.png");
+                        game.app.stage.addChild(oPlay);
+                        oPlay.x = rectangle.x + rectangle.width / 2 - oPlay.width / 2;
+                        oPlay.y = rectangle.y + rectangle.height / 2 - oPlay.height / 2;
+                        rectangle.turn = 'o';
+                        rectangle.interactive = false;
+                        rectangle.buttonMode = false;
+                        this.turn = 'x';
+                    }
+                    var that = this;
+                    var checkDiagonal = function () {
+                        return new Promise(function (resolve, reject) {
+                            if (that.diagonal())
+                                reject();
+                            else
+                                resolve();
+                        });
+                    };
+                    var checkColumn = function () {
+                        return new Promise(function (resolve, reject) {
+                            if (that.anyColumn())
+                                reject();
+                            else
+                                resolve();
+                        });
+                    };
+                    var checkRow = function () {
+                        return new Promise(function (resolve, reject) {
+                            if (that.anyRow())
+                                reject();
+                            else
+                                resolve();
+                        });
+                    };
+                    var checkOppDiagonal = function () {
+                        return new Promise(function (resolve, reject) {
+                            if (that.oppDiagonal())
+                                reject();
+                            else
+                                resolve();
+                        });
+                    };
+                    var checkTerminal = function () {
+                        return new Promise(function (resolve, reject) {
+                            if (that.terminal())
+                                resolve();
+                            else
+                                reject();
+                        });
+                    };
+                    checkDiagonal().then(function () { return checkColumn(); }, function () { return alert("player " + rectangle.turn + " has won"); })
+                        .then(function () { return checkRow(); }, function () { return alert("player " + rectangle.turn + " has won"); })
+                        .then(function () { return checkOppDiagonal(); }, function () { return alert("player " + rectangle.turn + " has won"); })
+                        .then(function () { return checkTerminal(); }, function () { return alert("player " + rectangle.turn + " has won"); })
+                        .then(function () { return alert("game has drawn"); }, null);
+                }, this_1);
                 countW = countW + (this_1.grid.width / stats.col);
             };
             var this_1 = this;
@@ -61,6 +126,86 @@ var Images = /** @class */ (function () {
             }
             countH = countH + (this.grid.height / stats.row);
         }
+    };
+    Images.prototype.diagonal = function () {
+        var checkD = game.app.stage.getChildByName(0 + "," + 0).turn;
+        if (checkD === '')
+            return false;
+        for (var i = 1; i < stats.row; i++) {
+            for (var j = 1; j < stats.col; j++) {
+                if ((i === j) && (checkD !== game.app.stage.getChildByName(i + "," + j).turn))
+                    return false;
+            }
+        }
+        return true;
+    };
+    ;
+    Images.prototype.anyColumn = function () {
+        var flagC = 0;
+        for (var i = 0; i < stats.row; i++) {
+            var checkC = game.app.stage.getChildByName(0 + "," + i).turn;
+            if (checkC === '') {
+                if (i === stats.row - 1)
+                    return false;
+                else
+                    continue;
+            }
+            for (var j = 1; j < stats.col; j++) {
+                if (checkC !== game.app.stage.getChildByName(j + "," + i).turn) {
+                    flagC = 1;
+                    break;
+                }
+            }
+            if (flagC === 0)
+                return true;
+            else
+                return false;
+        }
+    };
+    Images.prototype.anyRow = function () {
+        var flagR = 0;
+        for (var i = 0; i < stats.row; i++) {
+            var checkR = game.app.stage.getChildByName(i + "," + 0).turn;
+            if (checkR === '') {
+                if (i === stats.row - 1)
+                    return false;
+                else
+                    continue;
+            }
+            for (var j = 1; j < stats.col; j++) {
+                if (checkR !== game.app.stage.getChildByName(i + "," + j).turn) {
+                    flagR = 1;
+                    break;
+                }
+            }
+            if (flagR === 0)
+                return true;
+            else
+                return false;
+        }
+    };
+    Images.prototype.oppDiagonal = function () {
+        var checkOD = game.app.stage.getChildByName(0 + "," + (stats.col - 1)).turn;
+        if (checkOD === '')
+            return false;
+        var j = stats.col - 1;
+        for (var i = 0; i < stats.row; i++) {
+            if (checkOD !== game.app.stage.getChildByName(i + 1 + "," + (j - 1)).turn)
+                return false;
+            j--;
+            if (j == 0)
+                break;
+        }
+        return true;
+    };
+    Images.prototype.terminal = function () {
+        for (var i = 0; i < stats.row; i++) {
+            for (var j = 0; j < stats.col; j++) {
+                if (game.app.stage.getChildByName(i + "," + j).turn === '')
+                    return false;
+            }
+        }
+        return true;
     };
     return Images;
 }());
