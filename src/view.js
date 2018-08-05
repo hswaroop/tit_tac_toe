@@ -108,15 +108,14 @@ var Images = /** @class */ (function () {
                         return new Promise(function (resolve, reject) {
                             if (that.terminal())
                                 resolve();
-                            else
-                                reject();
                         });
                     };
-                    checkDiagonal().then(function () { return checkColumn(); }, function () { return alert("player " + rectangle.turn + " has won"); })
-                        .then(function () { return checkRow(); }, function () { return alert("player " + rectangle.turn + " has won"); })
-                        .then(function () { return checkOppDiagonal(); }, function () { return alert("player " + rectangle.turn + " has won"); })
-                        .then(function () { return checkTerminal(); }, function () { return alert("player " + rectangle.turn + " has won"); })
-                        .then(function () { return alert("game has drawn"); }, null);
+                    checkDiagonal().then(function () { return checkColumn(); })
+                        .then(function () { return checkRow(); })
+                        .then(function () { return checkOppDiagonal(); })
+                        .then(function () { return checkTerminal(); })
+                        .then(function () { return alert("game has drawn"); })
+                        .catch(function () { return alert("player " + rectangle.turn + " has won"); });
                 }, this_1);
                 countW = countW + (this_1.grid.width / stats.col);
             };

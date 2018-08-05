@@ -129,16 +129,15 @@ class Images {
                         return new Promise(function (resolve, reject) {
                             if (that.terminal())
                                 resolve();
-                            else
-                                reject();
                         })
                     }
 
-                    checkDiagonal().then(() => checkColumn(),() => alert("player " + rectangle.turn + " has won") )
-                    .then(() => checkRow(),()=> alert("player " + rectangle.turn + " has won"))
-                    .then(() => checkOppDiagonal(), () => alert("player " + rectangle.turn + " has won"))
-                    .then(() => checkTerminal(),() => alert("player " + rectangle.turn + " has won"))
-                    .then(() => alert("game has drawn"), null);
+                    checkDiagonal().then(() => checkColumn())
+                    .then(() => checkRow())
+                    .then(() => checkOppDiagonal())
+                    .then(() => checkTerminal())
+                    .then(() => alert("game has drawn"))
+                    .catch(() => alert("player " + rectangle.turn + " has won"));
                 }, this);
                 countW = countW + (this.grid.width / stats.col);
             }
